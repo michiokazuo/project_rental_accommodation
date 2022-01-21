@@ -2,12 +2,15 @@ let req = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     report = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     room = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 
+let selectSearchSort;
 let tenantList = [];
 let reportList = [];
 
-let year_now, month_now;
+let year_now, month_now, year, month;
 
 $(async function () {
+    selectSearchSort = $("#sort");
+
     await getUserInSystem();
     await loadAdminDTO();
     await loadTenant();
@@ -16,9 +19,13 @@ $(async function () {
     if (!adminDTO)
         window.location.href = "/error";
 
-    year_now = new Date().getFullYear();
-    month_now = new Date().getMonth();
 
+    year_now = new Date().getFullYear();
+    year = year_now;
+    month_now = new Date().getMonth();
+    month = month_now;
+
+    sortYear();
     classify();
     showChartRoom1();
     showChartRoom2();
@@ -61,6 +68,26 @@ function classify() {
         for (const r of reportList)
             if (r && new Date(r.createDate).getFullYear() === year_now)
                 report[new Date(r.createDate).getMonth()]++;
+}
+
+function sortYear() {
+    selectSearchSort.change(function () {
+        year_now = selectSearchSort.val() - 0;
+        if(year != year_now){
+            month_now = 12;
+        }
+
+        req = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+        report = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+        room = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+
+        classify();
+
+        console.log(report);
+
+        showChartRoom1();
+        showChartRoom2();
+    });
 }
 
 function showChartRoom1() {
